@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  postgres-db:
+    container_name: db
+    image: postgres:13
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+#    volumes:
+#      - postgres-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+  pgadmin:
+    container_name: pgadmin6_client
+    image: dpage/pgadmin4:6
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: pass@word123
+    ports:
+      - 5050:80
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    restart: unless-stopped
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    image: 'bitnami/kafka:latest'
+    restart: unless-stopped
+    ports:
+      - '9092:9092'
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CLIENT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://localhost:9092
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+    depends_on:
+      - zookeeper
+
+
+volumes:
+  postgres-db:
+
