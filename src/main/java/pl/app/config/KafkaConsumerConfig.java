@@ -24,26 +24,9 @@ public class KafkaConsumerConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServer;
 
+    //-------------------------------------JSON---------------------------------------------------------------------------
     @Bean
-    ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerBaseObjectContainerFactory53123() {
-        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(baseObjectConsumerFactory());
-        factory.getContainerProperties().setIdleBetweenPolls(53123);
-        factory.getContainerProperties().setConsumerStartTimeout(Duration.ofMillis(53123));
-        return factory;
-    }
-
-    @Bean
-    ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerBaseObjectContainerFactory13123() {
-        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(baseObjectConsumerFactory());
-        factory.getContainerProperties().setIdleBetweenPolls(13123);
-        factory.getContainerProperties().setConsumerStartTimeout(Duration.ofMillis(13123));
-        return factory;
-    }
-
-    @Bean
-    ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerBaseObjectContainerFactory7123() {
+    ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerBaseObjectContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(baseObjectConsumerFactory());
         factory.getContainerProperties().setIdleBetweenPolls(7123);
@@ -61,6 +44,23 @@ public class KafkaConsumerConfig {
         return new DefaultKafkaConsumerFactory<>(baseConsumerConfig, new StringDeserializer(), jsonDeserializer);
     }
 
+    //-------------------------------------STRING---------------------------------------------------------------------------
+    @Bean
+    ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerBaseStringContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(baseStringConsumerFactory() );
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, String> baseStringConsumerFactory() {
+        Map<String, Object> baseConsumerConfig = baseConsumerConfig();
+        baseConsumerConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        baseConsumerConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        return new DefaultKafkaConsumerFactory<>(baseConsumerConfig);
+    }
+
+    //-------------------------------------CONFIG---------------------------------------------------------------------------
     @Bean
     public Map<String, Object> baseConsumerConfig() {
         Map<String, Object> props = new HashMap<>();
