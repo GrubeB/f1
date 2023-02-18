@@ -7,6 +7,8 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import pl.app.thread.application.exception.FailedToReadPageException;
+import pl.app.thread.application.port.in.*;
 import pl.app.thread.application.port.in.dto.ThreadListToFetchMessage;
 import pl.app.thread.application.port.in.dto.ThreadToFetchMessage;
 import pl.app.thread.application.port.in.dto.ThreadWithListToFetchMessage;
@@ -27,7 +29,15 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ThreadService {
+class ThreadService implements
+        DelegateThreadListToFetchToKafka,
+        DelegateThreadToFetchToKafka,
+        DelegateThreadWithListToFetchToKafka,
+        FetchAndSaveThread,
+        FetchThread,
+        FetchThreadListAndDelegateAllToKafka,
+        FetchThreadWithListAndDelegateNotFetchedToKafka
+{
     private final Logger logger = LoggerFactory.getLogger(ThreadService.class);
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private final ReadPage readPage;
@@ -39,17 +49,18 @@ public class ThreadService {
     private final DelegateThreadWithListToFetchKafka delegateThreadWithListToFetchKafka;
 
 
+    @Override
     public void fetchThreadListAndDelegateAllToKafka(ThreadListToFetchMessage message) {
         List<Thread> threadList = extractThreadListFromThreadList(message.getUrl());
         threadList.forEach(thread -> delegateThreadWithListToFetchToKafka(thread.getURL()));
     }
-
+    @Override
     public void fetchAndSaveThread(ThreadToFetchMessage message) {
         Thread fetchedThread = fetchThread(message.getUrl());
         fetchedThread.setMainThreadId(message.getMainThreadId());
         createPort.create(fetchedThread);
     }
-
+    @Override
     public void fetchThreadWithListAndDelegateNotFetchedToKafka(ThreadWithListToFetchMessage message) {
         Thread fetchedThread = fetchThread(message.getUrl());
         List<Thread> fetchedThreadList = extractThreadsFromThreadTree(message.getUrl());
@@ -71,28 +82,28 @@ public class ThreadService {
                 .filter(thread -> !savedThreadIdList.contains(thread.getThreadId()))
                 .forEach(thread -> this.delegateThreadToFetchToKafka(thread.getURL(), thread.getMainThreadId()));
     }
-
-
-    public Thread fetchThread(String link) {
-        Document doc = readPage.readPage(link).orElseThrow(() -> new RuntimeException("Serwice was unable to read page!"));
+    @Override
+    public Thread fetchThread(String url) {
+        Document doc = readPage.readPage(url).orElseThrow(() -> new FailedToReadPageException("Serwice was unable to read page!"));
         Thread fetchedThread = extractThreadFromBoxThread(doc.select("#boxThread"));
-        fetchedThread.setThreadId(extractThreadIdFromLink(link));
-        fetchedThread.setURL(link);
+        fetchedThread.setThreadId(extractThreadIdFromLink(url));
+        fetchedThread.setURL(url);
         fetchedThread.setHasBeenFetched(true);
         return fetchedThread;
     }
 
     //-------------------------DELEGATE------------------------------------------------------------------------------------------
+    @Override
     public void delegateThreadListToFetchToKafka(String url) {
         ThreadListToFetchMessage message = new ThreadListToFetchMessage(url);
         delegateThreadListToFetchKafka.sendToKafka(message);
     }
-
+    @Override
     public void delegateThreadToFetchToKafka(String url, Long mainThreadId) {
         ThreadToFetchMessage message = new ThreadToFetchMessage(url, mainThreadId);
         delegateThreadToFetchKafka.sendToKafka(message);
     }
-
+    @Override
     public void delegateThreadWithListToFetchToKafka(String url) {
         ThreadWithListToFetchMessage message = new ThreadWithListToFetchMessage(url);
         delegateThreadWithListToFetchKafka.sendToKafka(message);
@@ -144,7 +155,7 @@ public class ThreadService {
     }
 
     private List<Thread> extractThreadListFromThreadList(String link) {
-        Document doc = readPage.readPage(link).orElseThrow(() -> new RuntimeException("Serwice was unable to read page!"));
+        Document doc = readPage.readPage(link).orElseThrow(() -> new FailedToReadPageException("Serwice was unable to read page!"));
 
         List<Thread> threadList = new ArrayList<>(10);
         for (Element row : doc.select(".threadsList tbody tr")) {
@@ -172,7 +183,7 @@ public class ThreadService {
     }
 
     private List<Thread> extractThreadsFromThreadTree(String link) {
-        Document doc = readPage.readPage(link).orElseThrow(() -> new RuntimeException("Serwice was unable to read page!"));
+        Document doc = readPage.readPage(link).orElseThrow(() -> new FailedToReadPageException("Serwice was unable to read page!"));
 
         List<Thread> threadList = new ArrayList<>(10);
         for (Element row : doc.select("#boxThreadTree .boxContent .threadTree li")) {

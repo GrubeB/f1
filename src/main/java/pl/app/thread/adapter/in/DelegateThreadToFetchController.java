@@ -7,19 +7,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.app.thread.application.service.ThreadService;
+import pl.app.thread.application.port.in.DelegateThreadListToFetchToKafka;
+import pl.app.thread.application.port.in.DelegateThreadWithListToFetchToKafka;
 
 @RestController
 @RequestMapping("/api/delegate-fetch-threads")
 @RequiredArgsConstructor
 public class DelegateThreadToFetchController {
-    //    private final FetchThreadAndDelegateNotFetchedToKafka fetchThreadAndDelegateNotFetchedToKafka;
-//    private final FetchThreadsListAndDelegateToKafka fetchThreadsListAndDelegateToKafka;
-    private final ThreadService threadService;
+    private final DelegateThreadListToFetchToKafka delegateThreadListToFetchToKafka;
+    private final DelegateThreadWithListToFetchToKafka delegateThreadWithListToFetchToKafka;
 
     @PostMapping("/thread-list")
     private ResponseEntity<?> delegateThreadListToFetchToKafka(@RequestBody String link) {
-        threadService.delegateThreadListToFetchToKafka(link);
+        delegateThreadListToFetchToKafka.delegateThreadListToFetchToKafka(link);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -31,10 +31,9 @@ public class DelegateThreadToFetchController {
 
     @PostMapping("/thread-with-list")
     private ResponseEntity<?> delegateThreadWithListToFetchToKafka(@RequestBody String link) {
-        threadService.delegateThreadWithListToFetchToKafka(link);
+        delegateThreadWithListToFetchToKafka.delegateThreadWithListToFetchToKafka(link);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
 
 
 }

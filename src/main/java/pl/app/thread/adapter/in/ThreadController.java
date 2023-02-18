@@ -20,11 +20,6 @@ public class ThreadController {
     private final FetchByIdPort fetchByIdPort;
     private final FetchAllPort fetchAllPort;
 
-    //    @GetMapping
-//    private ResponseEntity<?> adw() {
-//        fetchThreadsAndDelegateRestToKafkaFromBankierPlPage.f();
-//        return ResponseEntity.status(HttpStatus.OK).build();
-//    }
     @GetMapping
     private ResponseEntity<List<Thread>> fetchAll() {
         List<Thread> threadList = fetchAllPort.fetchAll();
