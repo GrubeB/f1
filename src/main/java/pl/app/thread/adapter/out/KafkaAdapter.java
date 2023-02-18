@@ -56,15 +56,15 @@ public class KafkaAdapter implements
     }
 
     private ProducerRecord<String, Object> createRecord(ThreadListToFetchMessage data) {
-        return new ProducerRecord<>(KafkaConfig.THREAD_LIST_TO_FETCH_TOPIC_NAME, data);
+        return new ProducerRecord<>(KafkaConfig.THREAD_LIST_TO_FETCH_TOPIC_NAME,"ThreadListToFetchMessage", data);
     }
 
     private ProducerRecord<String, Object> createRecord(ThreadToFetchMessage data) {
-        return new ProducerRecord<>(KafkaConfig.THREAD_TO_FETCH_TOPIC_NAME, data);
+        return new ProducerRecord<>(KafkaConfig.THREAD_TO_FETCH_TOPIC_NAME,"ThreadToFetchMessage", data);
     }
 
     private ProducerRecord<String, Object> createRecord(ThreadWithListToFetchMessage data) {
-        return new ProducerRecord<>(KafkaConfig.THREAD_WITH_LIST_TO_FETCH_TOPIC_NAME, data);
+        return new ProducerRecord<>(KafkaConfig.THREAD_WITH_LIST_TO_FETCH_TOPIC_NAME, "ThreadWithListToFetchMessage", data);
     }
 
 }

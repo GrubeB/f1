@@ -6,7 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pl.app.thread.application.exception.FailedToReadPageException;
-import pl.app.thread.application.port.in.*;
+import pl.app.thread.application.port.in.FetchAndSaveThread;
+import pl.app.thread.application.port.in.FetchThread;
+import pl.app.thread.application.port.in.FetchThreadListAndDelegateAllToKafka;
+import pl.app.thread.application.port.in.FetchThreadWithListAndDelegateNotFetchedToKafka;
 import pl.app.thread.application.port.in.dto.ThreadListToFetchMessage;
 import pl.app.thread.application.port.in.dto.ThreadToFetchMessage;
 import pl.app.thread.application.port.in.dto.ThreadWithListToFetchMessage;
@@ -25,8 +28,7 @@ class ThreadService implements
         FetchAndSaveThread,
         FetchThread,
         FetchThreadListAndDelegateAllToKafka,
-        FetchThreadWithListAndDelegateNotFetchedToKafka
-{
+        FetchThreadWithListAndDelegateNotFetchedToKafka {
     private final Logger logger = LoggerFactory.getLogger(ThreadService.class);
     private final ReadPage readPage;
     private final FetchByThreadIdPort fetchByThreadIdPort;
@@ -39,17 +41,23 @@ class ThreadService implements
     @Override
     public void fetchThreadListAndDelegateAllToKafka(ThreadListToFetchMessage message) {
         List<Thread> threadList = extractService.extractThreadListFromThreadList(message.getUrl());
-        threadList.forEach(thread -> delegateToFetchService.delegateThreadWithListToFetchToKafka(thread.getURL()));
+        threadList.forEach(thread -> delegateToFetchService.delegateThreadWithListToFetchToKafka(
+                new ThreadWithListToFetchMessage(thread.getURL(), message.getIndustryName())));
     }
+
     @Override
     public void fetchAndSaveThread(ThreadToFetchMessage message) {
         Thread fetchedThread = fetchThread(message.getUrl());
         fetchedThread.setMainThreadId(message.getMainThreadId());
+        fetchedThread.setIndustryName(message.getIndustryName());
         createPort.create(fetchedThread);
     }
+
     @Override
     public void fetchThreadWithListAndDelegateNotFetchedToKafka(ThreadWithListToFetchMessage message) {
         Thread fetchedThread = fetchThread(message.getUrl());
+        fetchedThread.setIndustryName(message.getIndustryName());
+
         List<Thread> fetchedThreadList = extractService.extractThreadsFromThreadTree(message.getUrl());
         fetchedThreadList.add(fetchedThread);
 
@@ -67,8 +75,11 @@ class ThreadService implements
 
         fetchedThreadList.stream()
                 .filter(thread -> !savedThreadIdList.contains(thread.getThreadId()))
-                .forEach(thread -> delegateToFetchService.delegateThreadToFetchToKafka(thread.getURL(), thread.getMainThreadId()));
+                .forEach(thread -> delegateToFetchService.delegateThreadToFetchToKafka(
+                        new ThreadToFetchMessage(thread.getURL(), thread.getMainThreadId(), message.getIndustryName())
+                ));
     }
+
     @Override
     public Thread fetchThread(String url) {
         Document doc = readPage.readPage(url).orElseThrow(() -> new FailedToReadPageException("Serwice was unable to read page!"));

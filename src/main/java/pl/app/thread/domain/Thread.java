@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class Thread {
     private Long id;
     private Long threadId;
+    private String industryName;
     private Long mainThreadId;
     private String URL;
     private String title;

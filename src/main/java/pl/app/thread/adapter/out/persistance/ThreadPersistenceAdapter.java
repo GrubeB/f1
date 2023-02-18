@@ -9,7 +9,6 @@ import pl.app.thread.application.port.out.persistance.*;
 import pl.app.thread.domain.Thread;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Setter
@@ -50,10 +49,11 @@ public class ThreadPersistenceAdapter implements
         return repository.findAllByMainThreadId(mainThreadId).stream()
                 .map(mapper::entityToDomain).toList();
     }
+
     @Override
     public Thread fetchById(Long id) {
         return repository.findById(id).map(mapper::entityToDomain)
-              .orElseThrow(() -> new RuntimeException("Not found object with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Not found object with id: " + id));
     }
 
     @Override

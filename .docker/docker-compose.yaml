@@ -46,7 +46,6 @@ services:
     depends_on:
       - zookeeper
 
-
 volumes:
   postgres-db:
 

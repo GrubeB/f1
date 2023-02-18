@@ -40,7 +40,7 @@ public class ThreadKafkaListener {
         try {
             fetchThreadListAndDelegateAllToKafka.fetchThreadListAndDelegateAllToKafka(payload);
         } catch (FailedToReadPageException exception) {
-            delegateThreadListToFetchToKafka.delegateThreadListToFetchToKafka(payload.getUrl());
+            //delegateThreadListToFetchToKafka.delegateThreadListToFetchToKafka(payload.getUrl());
         }
     }
 
@@ -50,7 +50,7 @@ public class ThreadKafkaListener {
         try {
             fetchAndSaveThread.fetchAndSaveThread(payload);
         } catch (FailedToReadPageException exception) {
-            delegateThreadToFetchToKafka.delegateThreadToFetchToKafka(payload.getUrl(), payload.getMainThreadId());
+            //delegateThreadToFetchToKafka.delegateThreadToFetchToKafka(payload.getUrl(), payload.getMainThreadId());
         }
     }
 
@@ -60,7 +60,7 @@ public class ThreadKafkaListener {
         try {
             fetchThreadWithListAndDelegateNotFetchedToKafka.fetchThreadWithListAndDelegateNotFetchedToKafka(payload);
         } catch (FailedToReadPageException exception) {
-            delegateThreadWithListToFetchToKafka.delegateThreadWithListToFetchToKafka(payload.getUrl());
+            //delegateThreadWithListToFetchToKafka.delegateThreadWithListToFetchToKafka(payload.getUrl());
         }
     }
 }

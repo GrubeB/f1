@@ -20,11 +20,11 @@ public class HtmlPageReader implements ReadPage {
     private static final Logger logger = LoggerFactory.getLogger(HtmlPageReader.class);
 
     @Override
-    @Cacheable(value = CacheCustomizer.HTML_READ_PAGE_CACHE_NAME)
+    @Cacheable(value = CacheCustomizer.HTML_READ_PAGE_CACHE_NAME, unless = "#result == T(java.util.Optional).empty()")
     public Optional<Document> readPage(String link) {
         try {
             logger.info("Reading page form url: " + link);
-            return Optional.of(Jsoup.connect(link + "?sort=pa").get());
+            return Optional.of(Jsoup.connect(link + "?sort=pa").ignoreHttpErrors(true).get());
         } catch (IOException exception) {
             logger.error("Failed to read page form url: " + link);
             return Optional.empty();

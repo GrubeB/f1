@@ -8,30 +8,35 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.app.thread.application.port.in.DelegateThreadListToFetchToKafka;
+import pl.app.thread.application.port.in.DelegateThreadToFetchToKafka;
 import pl.app.thread.application.port.in.DelegateThreadWithListToFetchToKafka;
+import pl.app.thread.application.port.in.dto.ThreadListToFetchMessage;
+import pl.app.thread.application.port.in.dto.ThreadToFetchMessage;
+import pl.app.thread.application.port.in.dto.ThreadWithListToFetchMessage;
 
 @RestController
 @RequestMapping("/api/delegate-fetch-threads")
 @RequiredArgsConstructor
 public class DelegateThreadToFetchController {
     private final DelegateThreadListToFetchToKafka delegateThreadListToFetchToKafka;
+    private final DelegateThreadToFetchToKafka delegateThreadToFetchToKafka;
     private final DelegateThreadWithListToFetchToKafka delegateThreadWithListToFetchToKafka;
 
     @PostMapping("/thread-list")
-    private ResponseEntity<?> delegateThreadListToFetchToKafka(@RequestBody String link) {
-        delegateThreadListToFetchToKafka.delegateThreadListToFetchToKafka(link);
+    private ResponseEntity<?> delegateThreadListToFetchToKafka(@RequestBody ThreadListToFetchMessage message) {
+        delegateThreadListToFetchToKafka.delegateThreadListToFetchToKafka(message);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-//    @PostMapping("/thread")
-//    private ResponseEntity<?> delegateThreadToFetchToKafka(@RequestBody String link) {
-//        threadService.delegateThreadToFetchToKafka(link,-1L);
-//        return ResponseEntity.status(HttpStatus.OK).build();
-//    }
+    @PostMapping("/thread")
+    private ResponseEntity<?> delegateThreadToFetchToKafka(@RequestBody ThreadToFetchMessage message) {
+        delegateThreadToFetchToKafka.delegateThreadToFetchToKafka(message);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 
     @PostMapping("/thread-with-list")
-    private ResponseEntity<?> delegateThreadWithListToFetchToKafka(@RequestBody String link) {
-        delegateThreadWithListToFetchToKafka.delegateThreadWithListToFetchToKafka(link);
+    private ResponseEntity<?> delegateThreadWithListToFetchToKafka(@RequestBody ThreadWithListToFetchMessage message) {
+        delegateThreadWithListToFetchToKafka.delegateThreadWithListToFetchToKafka(message);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
