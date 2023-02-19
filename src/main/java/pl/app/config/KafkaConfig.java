@@ -21,6 +21,7 @@ public class KafkaConfig {
                 .replicas(1)
                 .build();
     }
+
     @Bean
     public NewTopic threadWithListToFetchTopic() {
         return TopicBuilder
@@ -29,6 +30,7 @@ public class KafkaConfig {
                 .replicas(1)
                 .build();
     }
+
     @Bean
     public NewTopic threadListToFetchTopic() {
         return TopicBuilder

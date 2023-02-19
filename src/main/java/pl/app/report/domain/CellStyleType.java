@@ -1,4 +1,4 @@
-package pl.app.report;
+package pl.app.report.domain;
 
 public enum CellStyleType {
 

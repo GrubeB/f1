@@ -1,7 +1,8 @@
-package pl.app.report;
+package pl.app.report.domain;
 
 import lombok.Getter;
 import org.apache.poi.ss.usermodel.*;
+import pl.app.report.application.service.CellStyleGenerator;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class Report {
     }
 
     public void writeRow(int sheetIndex, int rowIndex, int cellIndex, List<String> data, CellStyleType... styles) {
-        CellStyle cellStyle = CellStyleService.generateCellStyle(workbook, styles);
+        CellStyle cellStyle = CellStyleGenerator.generateCellStyle(workbook, styles);
         writeRow(sheetIndex, rowIndex, cellIndex, data, cellStyle);
     }
 
@@ -49,11 +50,7 @@ public class Report {
         sheet.setDefaultRowHeight((short) size);
     }
 
-    public CellStyle getDefaultCellStyle(Workbook workbook) {
-        return CellStyleService.getDefaultCellStyle(workbook);
-    }
-
     public CellStyle generateCellStyle(CellStyleType... styleType) {
-        return CellStyleService.generateCellStyle(workbook, styleType);
+        return CellStyleGenerator.generateCellStyle(workbook, styleType);
     }
 }

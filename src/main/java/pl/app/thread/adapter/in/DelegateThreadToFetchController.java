@@ -18,7 +18,7 @@ import pl.app.thread.application.port.in.dto.ThreadWithListToFetchMessage;
 @RestController
 @RequestMapping("/api/delegate-fetch-threads")
 @RequiredArgsConstructor
-public class DelegateThreadToFetchController {
+class DelegateThreadToFetchController {
     private final DelegateThreadListToFetchToKafka delegateThreadListToFetchToKafka;
     private final DelegateThreadToFetchToKafka delegateThreadToFetchToKafka;
     private final DelegateThreadWithListToFetchToKafka delegateThreadWithListToFetchToKafka;
@@ -28,13 +28,15 @@ public class DelegateThreadToFetchController {
         delegateThreadListToFetchToKafka.delegateThreadListToFetchToKafka(message);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
     @PostMapping("/extend-thread-list")
     private ResponseEntity<?> delegateThreadListToFetchToKafka(@RequestBody ExtendThreadListToFetchDto dto) {
         dto.getUrlList().forEach(url ->
-                delegateThreadListToFetchToKafka.delegateThreadListToFetchToKafka(new ThreadListToFetchMessage(url,dto.getIndustryName()))
+                delegateThreadListToFetchToKafka.delegateThreadListToFetchToKafka(new ThreadListToFetchMessage(url, dto.getIndustryName()))
         );
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
     @PostMapping("/thread")
     private ResponseEntity<?> delegateThreadToFetchToKafka(@RequestBody ThreadToFetchMessage message) {
         delegateThreadToFetchToKafka.delegateThreadToFetchToKafka(message);

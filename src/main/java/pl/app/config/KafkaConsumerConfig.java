@@ -9,9 +9,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -48,7 +46,7 @@ public class KafkaConsumerConfig {
     @Bean
     ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerBaseStringContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(baseStringConsumerFactory() );
+        factory.setConsumerFactory(baseStringConsumerFactory());
         return factory;
     }
 

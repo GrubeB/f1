@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @Getter
 @RequiredArgsConstructor
-public class ThreadPersistenceAdapter implements
+class ThreadPersistenceAdapter implements
         CreatePort,
         DeletePort,
         FetchAllPort,

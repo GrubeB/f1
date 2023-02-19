@@ -1,16 +1,12 @@
-package pl.app.report;
+package pl.app.report.application.service;
 
 import org.apache.poi.ss.usermodel.*;
+import pl.app.report.domain.CellStyleType;
 
 import java.util.Arrays;
 import java.util.function.Predicate;
 
-public class CellStyleService {
-
-    public static CellStyle getDefaultCellStyle(Workbook workbook) {
-        return generateCellStyle(workbook, CellStyleType.ARIAL, CellStyleType.FONT12);
-    }
-
+public class CellStyleGenerator {
     public static CellStyle generateCellStyle(Workbook workbook, CellStyleType... styleType) {
         CellStyle cellStyle = workbook.createCellStyle();
         Font font = workbook.createFont();
@@ -32,7 +28,7 @@ public class CellStyleService {
             switch (style) {
                 case RIGHT_ALIGNMENT -> cellStyle.setAlignment(HorizontalAlignment.RIGHT);
                 case CENTER_ALIGNMENT -> cellStyle.setAlignment(HorizontalAlignment.CENTER);
-                case BORDER -> CellStyleService.setBorder(cellStyle);
+                case BORDER -> CellStyleGenerator.setBorder(cellStyle);
                 case BACKGROUND_PRIMARY_LIGHT -> {
                     cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
                     cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -63,6 +59,5 @@ public class CellStyleService {
         cellStyle.setTopBorderColor(blackColorIndex);
         cellStyle.setBottomBorderColor(blackColorIndex);
     }
-
 }
 

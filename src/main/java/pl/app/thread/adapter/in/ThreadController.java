@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/threads")
 @RequiredArgsConstructor
-public class ThreadController {
+class ThreadController {
     private final FetchByIdPort fetchByIdPort;
     private final FetchAllPort fetchAllPort;
 

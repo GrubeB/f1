@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.app.report.ReportType;
+import pl.app.report.domain.ReportType;
 import pl.app.thread.application.port.out.GenerateThreadReport;
 import pl.app.thread.application.port.out.persistance.FetchAllPort;
 
@@ -16,7 +16,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/threads/reports")
 @RequiredArgsConstructor
-public class ReportController {
+class ReportController {
 
     private final GenerateThreadReport generateThreadReport;
     private final FetchAllPort fetchAllPort;

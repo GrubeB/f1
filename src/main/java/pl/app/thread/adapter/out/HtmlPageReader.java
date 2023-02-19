@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Service
-public class HtmlPageReader implements ReadPage {
+class HtmlPageReader implements ReadPage {
     private static final Logger logger = LoggerFactory.getLogger(HtmlPageReader.class);
 
     @Override

@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
-public class KafkaAdapter implements
+class KafkaAdapter implements
         DelegateThreadListToFetchKafka,
         DelegateThreadToFetchKafka,
         DelegateThreadWithListToFetchKafka {
@@ -56,11 +56,11 @@ public class KafkaAdapter implements
     }
 
     private ProducerRecord<String, Object> createRecord(ThreadListToFetchMessage data) {
-        return new ProducerRecord<>(KafkaConfig.THREAD_LIST_TO_FETCH_TOPIC_NAME,"ThreadListToFetchMessage", data);
+        return new ProducerRecord<>(KafkaConfig.THREAD_LIST_TO_FETCH_TOPIC_NAME, "ThreadListToFetchMessage", data);
     }
 
     private ProducerRecord<String, Object> createRecord(ThreadToFetchMessage data) {
-        return new ProducerRecord<>(KafkaConfig.THREAD_TO_FETCH_TOPIC_NAME,"ThreadToFetchMessage", data);
+        return new ProducerRecord<>(KafkaConfig.THREAD_TO_FETCH_TOPIC_NAME, "ThreadToFetchMessage", data);
     }
 
     private ProducerRecord<String, Object> createRecord(ThreadWithListToFetchMessage data) {

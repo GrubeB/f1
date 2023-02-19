@@ -25,7 +25,7 @@ import pl.app.thread.application.port.in.dto.ThreadWithListToFetchMessage;
                 KafkaConfig.THREAD_WITH_LIST_TO_FETCH_TOPIC_NAME
         }
 )
-public class ThreadKafkaListener {
+class ThreadKafkaListener {
     private final Logger logger = LoggerFactory.getLogger(ThreadKafkaListener.class);
     private final FetchAndSaveThread fetchAndSaveThread;
     private final FetchThreadListAndDelegateAllToKafka fetchThreadListAndDelegateAllToKafka;
