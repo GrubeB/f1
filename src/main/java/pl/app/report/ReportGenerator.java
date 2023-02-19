@@ -1,4 +1,4 @@
-package pl.app.excel;
+package pl.app.report;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -12,14 +12,13 @@ import java.io.IOException;
 @Service
 @RequiredArgsConstructor
 public class ReportGenerator {
-    private final StyleGenerator styleGenerator;
     public Report createNewReport(ReportType type) {
         Workbook workbook = switch (type){
             case XLSX: yield new XSSFWorkbook();
             case XLS:
             default: yield new HSSFWorkbook();
         };
-        return new Report(workbook, styleGenerator.cellStyleMap(workbook));
+        return new Report(workbook);
     }
     public byte[] generateReport(Report report) throws IOException {
         return generateReport(report.getWorkbook());

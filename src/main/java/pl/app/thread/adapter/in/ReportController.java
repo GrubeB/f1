@@ -5,10 +5,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.app.excel.ReportType;
+import pl.app.report.ReportType;
 import pl.app.thread.application.port.out.GenerateThreadReport;
 import pl.app.thread.application.port.out.persistance.FetchAllPort;
 

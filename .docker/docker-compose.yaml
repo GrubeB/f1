@@ -7,8 +7,8 @@ services:
     restart: unless-stopped
     ports:
       - 5432:5432
-#    volumes:
-#      - postgres-db:/var/lib/postgresql/data
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres

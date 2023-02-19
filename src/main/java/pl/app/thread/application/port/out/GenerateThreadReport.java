@@ -1,6 +1,6 @@
 package pl.app.thread.application.port.out;
 
-import pl.app.excel.ReportType;
+import pl.app.report.ReportType;
 import pl.app.thread.domain.Thread;
 
 import java.io.IOException;

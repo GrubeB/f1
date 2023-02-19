@@ -1,4 +1,4 @@
-package pl.app.excel;
+package pl.app.report;
 
 public enum ReportType {
     XLS,
