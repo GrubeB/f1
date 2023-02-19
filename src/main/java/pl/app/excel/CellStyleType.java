@@ -1,6 +1,7 @@
 package pl.app.excel;
 
 public enum CellStyleType {
+    DEFAULT,
     GREY_CENTERED_BOLD_ARIAL_WITH_BORDER,
     RIGHT_ALIGNED,
     RED_BOLD_ARIAL_WITH_BORDER,

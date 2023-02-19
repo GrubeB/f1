@@ -15,11 +15,14 @@ public class StyleGenerator {
         Font redBoldArial = createRedBoldArialFont(workbook);
 
         CellStyle rightAlignedStyle = createRightAlignedStyle(workbook);
-        CellStyle greyCenteredBoldArialWithBorderStyle = createGreyCenteredBoldArialWithBorderStyle(workbook);
-        CellStyle redBoldArialWithBorderStyle = createRedBoldArialWithBorderStyle(workbook);
+        CellStyle greyCenteredBoldArialWithBorderStyle = createGreyCenteredBoldArialWithBorderStyle(workbook,boldArial);
+        CellStyle redBoldArialWithBorderStyle = createRedBoldArialWithBorderStyle(workbook, redBoldArial);
         CellStyle rightAlignedDateFormatStyle = createRightAlignedDateFormatStyle(workbook);
 
+
+        greyCenteredBoldArialWithBorderStyle.cloneStyleFrom(rightAlignedDateFormatStyle);
         return Map.of(
+                CellStyleType.DEFAULT, workbook.createCellStyle(),
                 CellStyleType.RIGHT_ALIGNED, rightAlignedStyle,
                 CellStyleType.GREY_CENTERED_BOLD_ARIAL_WITH_BORDER, greyCenteredBoldArialWithBorderStyle,
                 CellStyleType.RED_BOLD_ARIAL_WITH_BORDER, redBoldArialWithBorderStyle,
@@ -34,16 +37,16 @@ public class StyleGenerator {
         return cellStyle;
     }
 
-    private CellStyle createRedBoldArialWithBorderStyle(Workbook workbook) {
+    private CellStyle createRedBoldArialWithBorderStyle(Workbook workbook, Font font) {
         CellStyle cellStyle = this.createBorderedStyle(workbook);
-        cellStyle.setFont(createRedBoldArialFont(workbook));
+        cellStyle.setFont(font);
         return cellStyle;
     }
 
-    private CellStyle createGreyCenteredBoldArialWithBorderStyle(Workbook workbook) {
+    private CellStyle createGreyCenteredBoldArialWithBorderStyle(Workbook workbook, Font font) {
         CellStyle cellStyle = this.createBorderedStyle(workbook);
         cellStyle.setAlignment(HorizontalAlignment.CENTER);
-        cellStyle.setFont(createBoldArialFont(workbook));
+        cellStyle.setFont(font);
         cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         return cellStyle;
