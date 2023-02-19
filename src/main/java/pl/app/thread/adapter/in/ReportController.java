@@ -4,43 +4,34 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.app.excel.CellStyleType;
-import pl.app.excel.ReportGenerator;
-import pl.app.excel.Report;
 import pl.app.excel.ReportType;
+import pl.app.thread.application.port.out.GenerateThreadReport;
+import pl.app.thread.application.port.out.persistance.FetchAllPort;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/threads/reports")
 @RequiredArgsConstructor
 public class ReportController {
 
-    private final ReportGenerator reportGenerator;
+    private final GenerateThreadReport generateThreadReport;
+    private final FetchAllPort fetchAllPort;
 
-//    @PostMapping("/xlsx")
-//    private ResponseEntity<byte[]> generateXlsxReport() throws IOException {
-//        byte[] report = excelGenerator.generateXlsxReport();
-//        return createResponseEntity(report, "report.xlsx");
-//    }
+    @GetMapping("/xlsx")
+    private ResponseEntity<byte[]> generateXlsxReport() throws IOException {
+        byte[] report = generateThreadReport.generate(fetchAllPort.fetchAll(), ReportType.XLSX);
+        return createResponseEntity(report, "report.xlsx");
+    }
 
-
-    @PostMapping("/xls")
+    @GetMapping("/xls")
     private ResponseEntity<byte[]> generateXlsReport() throws IOException {
-        //byte[] report = excelGenerator.generateXlsReport();
-        Report report = reportGenerator.createNewReport(ReportType.XLS);
-        report.writeRow(0,0,0, Arrays.asList("Buenos Aires", "Córdoba", "La Plata"), CellStyleType.DEFAULT);
-        report.writeRow(0,1,0, Arrays.asList("2Buenos Aires", "Córdoba", "La Plata"), CellStyleType.RIGHT_ALIGNED);
-        report.writeRow(0,2,0, Arrays.asList("2Buenos Aires", "Córdoba", "La Plata"), CellStyleType.GREY_CENTERED_BOLD_ARIAL_WITH_BORDER);
-        report.writeRow(0,3,0, Arrays.asList("2Buenos Aires", "Córdoba", "La Plata"), CellStyleType.RED_BOLD_ARIAL_WITH_BORDER);
-        report.writeRow(0,4,0, Arrays.asList("2Buenos Aires", "Córdoba", "La Plata"), CellStyleType.RIGHT_ALIGNED_DATE_FORMAT);
-        byte[] bytes = reportGenerator.generateReport(report);
-        return createResponseEntity(bytes, "report.xls");
+        byte[] report = generateThreadReport.generate(fetchAllPort.fetchAll(), ReportType.XLS);
+        return createResponseEntity(report, "report.xls");
     }
 
     private ResponseEntity<byte[]> createResponseEntity(byte[] report, String fileName) {
