@@ -74,19 +74,18 @@ class ExtractThreadFromPageService {
             try {
                 String title = row.select(".threadTitle a").get(0).text().trim();
                 String threadLink = row.select(".threadTitle a").get(0).absUrl("href");
-                Long threadId = extractThreadIdFromLink(threadLink);
                 String authorName = row.select(".threadAuthor").get(0).text().trim();
                 String numberOfSubThreadsString = row.select(".threadCount span").get(0).text().trim();
                 String createDateTimeText = row.select(".createDate").get(0).text().trim();
                 LocalDateTime createDateTime = LocalDateTime.parse(createDateTimeText, formatter);
                 Thread thread = Thread.builder()
-                        .threadId(threadId)
                         .title(title)
                         .URL(threadLink)
                         .authorName(authorName)
                         .createDateTime(createDateTime)
                         .hasBeenFetched(false)
                         .build();
+                thread.setThreadIdFromURL();
                 threadList.add(thread);
             } catch (Exception exception) {
             }
@@ -102,34 +101,22 @@ class ExtractThreadFromPageService {
             try {
                 String title = row.select("a").text().trim();
                 String threadLink = row.select("a").get(0).absUrl("href");
-                Long threadId = extractThreadIdFromLink(threadLink);
                 String authorName = row.select(".author").get(0).text().split(":", 2)[1].trim();
                 String createDateTimeText = row.select(".entry-date").get(0).text().trim();
                 LocalDateTime createDateTime = LocalDateTime.parse(createDateTimeText, formatter);
                 Thread thread = Thread.builder()
-                        .threadId(threadId)
                         .title(title)
                         .URL(threadLink)
                         .authorName(authorName)
                         .createDateTime(createDateTime)
                         .hasBeenFetched(false)
                         .build();
+                thread.setThreadIdFromURL();
                 threadList.add(thread);
             } catch (Exception exception) {
             }
         }
         return threadList;
-    }
-
-    public Long extractThreadIdFromLink(String url) {
-        try {
-            String substring = url.substring(0, url.lastIndexOf(".html"));
-            String idString = substring.substring(url.lastIndexOf(",") + 1);
-            return Long.parseLong(idString);
-
-        } catch (Exception exception) {
-            return -1L;
-        }
     }
 
     public List<String> extractPageUrls(String url) {

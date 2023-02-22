@@ -24,4 +24,22 @@ public class Thread {
     private Integer numberOfDislikes;
     private Integer numberOfLikes;
     private Boolean hasBeenFetched = false;
+
+    public void setThreadIdFromURL() {
+        this.threadId = extractThreadIdFromURL();
+    }
+
+    public Long extractThreadIdFromURL() {
+        try {
+            String substring = URL.substring(0, URL.lastIndexOf(".html"));
+            String idString = substring.substring(URL.lastIndexOf(",") + 1);
+            if (idString.length() != 8) {
+                String substringWithoutNumberOfPage = URL.substring(0, URL.lastIndexOf(","));
+                idString = substringWithoutNumberOfPage.substring(substringWithoutNumberOfPage.lastIndexOf(",") + 1);
+            }
+            return Long.parseLong(idString);
+        } catch (Exception exception) {
+            return -1L;
+        }
+    }
 }

@@ -67,13 +67,14 @@ class ThreadService implements
         try {
             Thread fetchedThread = fetchThread(message.getUrl());
             fetchedThread.setIndustryName(message.getIndustryName());
-
             ifThereAreMorePagesDelegateThreadWithList(message);
 
             List<Thread> fetchedThreadList = extractService.extractThreadsFromThreadTree(message.getUrl());
             fetchedThreadList.add(fetchedThread);
 
-            Thread mainThread = fetchedThreadList.stream().min(Comparator.comparing(Thread::getCreateDateTime)).orElseThrow(() -> new RuntimeException("Something went wrong!"));
+            Thread mainThread = fetchedThreadList.stream()
+                    .min(Comparator.comparing(Thread::getCreateDateTime))
+                    .orElseThrow(() -> new RuntimeException("Something went wrong!"));
             fetchedThreadList.forEach(thread -> thread.setMainThreadId(mainThread.getThreadId()));
 
             createIfNotExistsByThreadIdPort.createIfNotExistsByThreadIdPort(fetchedThread);
@@ -96,8 +97,9 @@ class ThreadService implements
     public Thread fetchThread(String url) {
         Document doc = readPage.readPage(url).orElseThrow(() -> new FailedToReadPageException("Serwice was unable to read page!"));
         Thread fetchedThread = extractService.extractThreadFromBoxThread(doc.select("#boxThread"));
-        fetchedThread.setThreadId(extractService.extractThreadIdFromLink(url));
+
         fetchedThread.setURL(url);
+        fetchedThread.setThreadIdFromURL();
         fetchedThread.setHasBeenFetched(true);
         return fetchedThread;
     }
