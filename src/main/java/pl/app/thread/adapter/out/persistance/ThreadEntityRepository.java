@@ -12,5 +12,6 @@ interface ThreadEntityRepository extends JpaRepository<ThreadEntity, Long> {
     List<ThreadEntity> findAllByMainThreadId(Long mainThreadId);
 
     Optional<ThreadEntity> findByThreadId(Long threadId);
-    List<ThreadEntity> findAllByCreateDateTimeLessThanEqualAndCreateDateTimeGreaterThanEqual(LocalDateTime from, LocalDateTime to);
+    List<ThreadEntity> findAllByIsMainThreadTrueAndCreateDateTimeGreaterThanEqualAndCreateDateTimeLessThanEqual(LocalDateTime from, LocalDateTime to);
+    List<ThreadEntity> findAllByMainThreadIdIn(List<Long> mainThreadIdList);
 }

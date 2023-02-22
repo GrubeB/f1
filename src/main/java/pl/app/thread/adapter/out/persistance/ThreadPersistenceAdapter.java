@@ -61,11 +61,13 @@ class ThreadPersistenceAdapter implements
     }
     @Override
     public List<Thread> findAllBetweenDates(LocalDate from, LocalDate to) {
-        return repository.findAllByCreateDateTimeLessThanEqualAndCreateDateTimeGreaterThanEqual(
-                        from.atTime(23, 59, 59),
-                        to.atStartOfDay()
-                ).stream()
-                .map(mapper::entityToDomain).toList();
+        List<ThreadEntity> mainThreadList = repository.findAllByIsMainThreadTrueAndCreateDateTimeGreaterThanEqualAndCreateDateTimeLessThanEqual(
+                from.atStartOfDay(),
+                to.atTime(23, 59, 59)
+        );
+        List<Long> mainThreadIdList = mainThreadList.stream().map(ThreadEntity::getThreadId).toList();
+        List<ThreadEntity> result = repository.findAllByMainThreadIdIn(mainThreadIdList);
+        return result.stream().map(mapper::entityToDomain).toList();
     }
 
     @Override

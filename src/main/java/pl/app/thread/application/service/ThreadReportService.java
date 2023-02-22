@@ -1,10 +1,7 @@
 package pl.app.thread.application.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import pl.app.report.application.port.in.CreateNewReport;
 import pl.app.report.application.port.in.GenerateReport;
@@ -15,15 +12,14 @@ import pl.app.thread.application.port.in.GenerateThreadReport;
 import pl.app.thread.application.port.out.persistance.FindAllBetweenDates;
 import pl.app.thread.domain.Thread;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +30,10 @@ class ThreadReportService implements GenerateThreadReport {
 
     @Override
     public byte[] generate(ReportType type, LocalDate from, LocalDate to) throws IOException {
-        if(Objects.isNull(from)) from = LocalDate.MIN;
-        if(Objects.isNull(to)) to = LocalDate.now();
+        if (Objects.isNull(from)) from = LocalDate.MIN;
+        if (Objects.isNull(to)) to = LocalDate.now();
         List<Thread> allBetweenDates = findAllBetweenDates.findAllBetweenDates(from, to);
-        return new byte[0];
+        return generate(allBetweenDates, type);
     }
 
     public byte[] generate(List<Thread> threadList, ReportType type) throws IOException {
@@ -50,26 +46,31 @@ class ThreadReportService implements GenerateThreadReport {
     private void writeRows(Report report, List<Thread> threadList) {
         CellStyle cellStylePrimary = report.generateCellStyle(CellStyleType.ARIAL, CellStyleType.FONT10, CellStyleType.BACKGROUND_PRIMARY);
         CellStyle cellStyleSecondary = report.generateCellStyle(CellStyleType.ARIAL, CellStyleType.FONT10, CellStyleType.BACKGROUND_PRIMARY_LIGHT);
-        //TODO ugly as night
-        List<List<Thread>> lists = threadList.stream()
-                .collect(Collectors.groupingBy(Thread::getMainThreadId))
-                .values().stream().toList();
-        int rowIndex = 1;
-        for (int listIndex = 0; listIndex < lists.size(); listIndex++) {
-            List<Thread> list = lists.get(listIndex);
-            for (int localRowIndex = 0; localRowIndex < list.size(); localRowIndex++) {
-                Thread thread = list.get(localRowIndex);
-                List<String> rowData = getRowData(thread, localRowIndex);
-                report.writeRow(0, rowIndex + localRowIndex, 0, rowData, listIndex % 2 == 0 ? cellStylePrimary : cellStyleSecondary);
-            }
-            rowIndex += list.size();
-        }
+
+        Comparator<LocalDateTime> nullLastLocalDateTimeSafe = (o1, o2) -> {
+            if (Objects.isNull(o2)) return 1;
+            else if (Objects.isNull(o1)) return -1;
+            else return o1.compareTo(o2);
+        };
+
+        Comparator<Thread> comparator = Comparator
+                .nullsLast(Comparator
+                        .nullsLast(Comparator.comparing(Thread::getMainThreadId))
+                        .thenComparing(Thread::getCreateDateTime, nullLastLocalDateTimeSafe));
+        List<Thread> sortedThreadList = threadList.stream().sorted(comparator).toList();
+
+
+        IntStream.range(0, sortedThreadList.size())
+                .forEach(idx -> {
+                    Thread thread = sortedThreadList.get(idx);
+                    List<String> rowData = getRowData(thread);
+                    report.writeRow(0, idx + 1, 0, rowData, thread.getThreadId().equals(thread.getMainThreadId()) ? cellStylePrimary : cellStyleSecondary);
+                });
 
     }
 
-    private List<String> getRowData(Thread thread, int idx) {
+    private List<String> getRowData(Thread thread) {
         return Arrays.asList(
-                String.valueOf(idx),
                 String.valueOf(Objects.equals(thread.getThreadId(), thread.getMainThreadId())),
                 String.valueOf(thread.getTitle()),
                 String.valueOf(thread.getComment()),
@@ -89,7 +90,7 @@ class ThreadReportService implements GenerateThreadReport {
     private void writeHeader(Report report) {
         List<String> headers = getHeaders();
         report.setColumnsWidth(0, 0, 20, 256 * 18);
-        report.setColumnsWidth(0, 2, 2, 256 * 70);
+        report.setColumnsWidth(0, 1, 2, 256 * 70);
         report.setRowsHeight(0, 20 * 20);
 
         CellStyle headerStyle = report.generateCellStyle(CellStyleType.ARIAL, CellStyleType.BOLD, CellStyleType.FONT10, CellStyleType.BACKGROUND_PRIMARY_DARK);
@@ -99,7 +100,6 @@ class ThreadReportService implements GenerateThreadReport {
 
     private List<String> getHeaders() {
         return Arrays.asList(
-                "Number posta",
                 "Pierwszy post",
                 "Tytuł",
                 "Komentarz",
