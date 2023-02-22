@@ -59,6 +59,7 @@ class ThreadPersistenceAdapter implements
         return repository.findAll().stream()
                 .map(mapper::entityToDomain).toList();
     }
+
     @Override
     public List<Thread> findAllBetweenDates(LocalDate from, LocalDate to) {
         List<ThreadEntity> mainThreadList = repository.findAllByIsMainThreadTrueAndCreateDateTimeGreaterThanEqualAndCreateDateTimeLessThanEqual(

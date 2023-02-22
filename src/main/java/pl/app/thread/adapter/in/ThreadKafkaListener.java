@@ -34,19 +34,19 @@ class ThreadKafkaListener {
 
     @KafkaHandler
     public void listen(ConsumerRecord<String, ThreadListToFetchMessage> cr, @Payload ThreadListToFetchMessage payload) {
-        logger.info("Logger [ThreadListToFetchMessage-json] received key {} | Payload: {} | Record: {}", cr.key(), payload, cr.toString());
+        logger.info("Logger [ThreadListToFetchMessage-json] received key {} | Payload: {} | Record: {}", cr.key(), payload, cr);
         fetchThreadListAndDelegateAllToKafka.fetchThreadListAndDelegateAllToKafka(payload);
     }
 
     @KafkaHandler
     public void listen(ConsumerRecord<String, ThreadToFetchMessage> cr, @Payload ThreadToFetchMessage payload) {
-        logger.info("Logger [ThreadToFetchMessage-json] received key {} | Payload: {} | Record: {}", cr.key(), payload, cr.toString());
+        logger.info("Logger [ThreadToFetchMessage-json] received key {} | Payload: {} | Record: {}", cr.key(), payload, cr);
         fetchAndSaveThread.fetchAndSaveThread(payload);
     }
 
     @KafkaHandler
     public void listen(ConsumerRecord<String, ThreadWithListToFetchMessage> cr, @Payload ThreadWithListToFetchMessage payload) {
-        logger.info("Logger [ThreadWithListToFetchMessage-json] received key {} | Payload: {} | Record: {}", cr.key(), payload, cr.toString());
+        logger.info("Logger [ThreadWithListToFetchMessage-json] received key {} | Payload: {} | Record: {}", cr.key(), payload, cr);
         fetchThreadWithListAndDelegateNotFetchedToKafka.fetchThreadWithListAndDelegateNotFetchedToKafka(payload);
     }
 }

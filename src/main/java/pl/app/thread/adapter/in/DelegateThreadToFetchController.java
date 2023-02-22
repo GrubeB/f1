@@ -31,13 +31,14 @@ class DelegateThreadToFetchController {
         dto.getUrlList().forEach(url -> delegateThreadListToFetchToKafka.delegateThreadListToFetchToKafka(new ThreadListToFetchMessage(url, dto.getIndustryName())));
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
     @PostMapping("/thread-list/number-of-urls")
     private ResponseEntity<?> delegateThreadListToFetchToKafka(@RequestBody ThreadListToFetchNumberOfUrlsDto dto) {
         String url = dto.getUrl();
         String[] split = url.split(".html", 2);
         String nextUrl;
-        for (int i = dto.getStartUrl()+1; i <dto.getNumberOfUrls()+dto.getStartUrl()+1; i++) {
-            nextUrl = split[0].concat(","+i).concat(".html");
+        for (int i = dto.getStartUrl() + 1; i < dto.getNumberOfUrls() + dto.getStartUrl() + 1; i++) {
+            nextUrl = split[0].concat("," + i).concat(".html");
             delegateThreadListToFetchToKafka.delegateThreadListToFetchToKafka(new ThreadListToFetchMessage(nextUrl, dto.getIndustryName()));
         }
         return ResponseEntity.status(HttpStatus.OK).build();

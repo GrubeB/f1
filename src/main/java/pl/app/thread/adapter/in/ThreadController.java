@@ -32,6 +32,7 @@ class ThreadController {
         Thread thread = fetchByIdPort.fetchById(id);
         return ResponseEntity.ok(thread);
     }
+
     @GetMapping("/count")
     private ResponseEntity<Long> count() {
         return ResponseEntity.ok(countPort.count());

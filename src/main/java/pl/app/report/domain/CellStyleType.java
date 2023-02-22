@@ -18,7 +18,7 @@ public enum CellStyleType {
     CENTER_ALIGNMENT(false),
     BORDER(false);
 
-    private boolean isFontStyle;
+    private final boolean isFontStyle;
 
     CellStyleType(boolean isFontStyle) {
         this.isFontStyle = isFontStyle;

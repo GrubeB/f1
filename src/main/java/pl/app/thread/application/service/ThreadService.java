@@ -93,7 +93,6 @@ class ThreadService implements
     }
 
 
-
     @Override
     public Thread fetchThread(String url) {
         Thread fetchedThread = extractService.extractThread(url);
@@ -101,13 +100,14 @@ class ThreadService implements
         fetchedThread.setThreadIdFromURL();
         return fetchedThread;
     }
+
     private List<Thread> getThreadFromThreadList(String url) {
         List<Thread> fetchedThreadList = extractService.extractThreadListFromBottomTable(url);
         List<String> pageUrlList = extractService.extractPageUrls(url);
         if (pageUrlList.size() > 1 && !pageUrlList.contains(url)) {
             pageUrlList.stream()
                     .skip(1)
-                    .forEach((pageUrl) ->{
+                    .forEach((pageUrl) -> {
                         List<Thread> threadListFormNextPageList = extractService.extractThreadListFromBottomTable(pageUrl);
                         fetchedThreadList.addAll(threadListFormNextPageList);
                     });

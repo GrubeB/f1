@@ -6,5 +6,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface FindAllBetweenDates {
-    public List<Thread> findAllBetweenDates(LocalDate from, LocalDate to);
+    List<Thread> findAllBetweenDates(LocalDate from, LocalDate to);
 }
