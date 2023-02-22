@@ -5,11 +5,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.app.report.domain.ReportType;
-import pl.app.thread.application.port.out.GenerateThreadReport;
-import pl.app.thread.application.port.out.persistance.FetchAllPort;
+import pl.app.thread.application.port.in.GenerateThreadReport;
+import pl.app.thread.application.port.in.dto.ThreadReportDto;
 
 import java.io.IOException;
 
@@ -17,19 +18,17 @@ import java.io.IOException;
 @RequestMapping("/api/threads/reports")
 @RequiredArgsConstructor
 class ReportController {
-
     private final GenerateThreadReport generateThreadReport;
-    private final FetchAllPort fetchAllPort;
 
     @GetMapping("/xlsx")
-    private ResponseEntity<byte[]> generateXlsxReport() throws IOException {
-        byte[] report = generateThreadReport.generate(fetchAllPort.fetchAll(), ReportType.XLSX);
+    private ResponseEntity<byte[]> generateXlsxReport(@RequestBody ThreadReportDto dto) throws IOException {
+        byte[] report = generateThreadReport.generate(ReportType.XLSX, dto.getFrom(), dto.getTo());
         return createResponseEntity(report, "report.xlsx");
     }
 
     @GetMapping("/xls")
-    private ResponseEntity<byte[]> generateXlsReport() throws IOException {
-        byte[] report = generateThreadReport.generate(fetchAllPort.fetchAll(), ReportType.XLS);
+    private ResponseEntity<byte[]> generateXlsReport(@RequestBody ThreadReportDto dto) throws IOException {
+        byte[] report = generateThreadReport.generate(ReportType.XLS, dto.getFrom(), dto.getTo());
         return createResponseEntity(report, "report.xls");
     }
 

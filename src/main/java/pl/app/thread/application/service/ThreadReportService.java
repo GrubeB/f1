@@ -1,27 +1,44 @@
-package pl.app.thread.adapter.out;
+package pl.app.thread.application.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import pl.app.report.application.port.in.CreateNewReport;
 import pl.app.report.application.port.in.GenerateReport;
 import pl.app.report.domain.CellStyleType;
 import pl.app.report.domain.Report;
 import pl.app.report.domain.ReportType;
-import pl.app.thread.application.port.out.GenerateThreadReport;
+import pl.app.thread.application.port.in.GenerateThreadReport;
+import pl.app.thread.application.port.out.persistance.FindAllBetweenDates;
 import pl.app.thread.domain.Thread;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-class ThreadReportGenerator implements GenerateThreadReport {
+class ThreadReportService implements GenerateThreadReport {
     private final CreateNewReport createNewReport;
     private final GenerateReport generateReport;
+    private final FindAllBetweenDates findAllBetweenDates;
+
+    @Override
+    public byte[] generate(ReportType type, LocalDate from, LocalDate to) throws IOException {
+        if(Objects.isNull(from)) from = LocalDate.MIN;
+        if(Objects.isNull(to)) to = LocalDate.now();
+        List<Thread> allBetweenDates = findAllBetweenDates.findAllBetweenDates(from, to);
+        return new byte[0];
+    }
 
     public byte[] generate(List<Thread> threadList, ReportType type) throws IOException {
         Report report = createNewReport.createNewReport(type);
@@ -99,3 +116,4 @@ class ThreadReportGenerator implements GenerateThreadReport {
         );
     }
 }
+

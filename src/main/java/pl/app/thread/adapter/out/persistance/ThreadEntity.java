@@ -39,6 +39,6 @@ class ThreadEntity {
     private Integer numberOfDislikes;
     @Column(name = "number_of_likes")
     private Integer numberOfLikes;
-    @Column(name = "has_been_fetched")
-    private Boolean hasBeenFetched = false;
+    @Column(name = "is_main_thread")
+    private Boolean isMainThread = false;
 }

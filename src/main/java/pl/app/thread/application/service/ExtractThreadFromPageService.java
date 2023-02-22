@@ -24,7 +24,9 @@ class ExtractThreadFromPageService {
     private final ReadPage readPage;
 
 
-    public Thread extractThreadFromBoxThread(Elements boxThread) {
+    public Thread extractThread(String url) {
+        Document doc = readPage.readPage(url).orElseThrow(() -> new FailedToReadPageException("Serwice was unable to read page!"));
+        Elements boxThread = doc.select("#boxThread");
         try {
             Elements boxMeta = boxThread.select(".boxMeta");
             Elements entryMeta = boxMeta.select(".entry-meta");
@@ -66,10 +68,10 @@ class ExtractThreadFromPageService {
         }
     }
 
-    public List<Thread> extractThreadListFromThreadList(String url) {
+    public List<Thread> extractThreadList(String url) {
         Document doc = readPage.readPage(url).orElseThrow(() -> new FailedToReadPageException("Serwice was unable to read page!"));
 
-        List<Thread> threadList = new ArrayList<>(10);
+        List<Thread> threadList = new ArrayList<>(30);
         for (Element row : doc.select(".threadsList tbody tr")) {
             try {
                 String title = row.select(".threadTitle a").get(0).text().trim();
@@ -83,7 +85,6 @@ class ExtractThreadFromPageService {
                         .URL(threadLink)
                         .authorName(authorName)
                         .createDateTime(createDateTime)
-                        .hasBeenFetched(false)
                         .build();
                 thread.setThreadIdFromURL();
                 threadList.add(thread);
@@ -93,7 +94,7 @@ class ExtractThreadFromPageService {
         return threadList;
     }
 
-    public List<Thread> extractThreadsFromThreadTree(String url) {
+    public List<Thread> extractThreadListFromBottomTable(String url) {
         Document doc = readPage.readPage(url).orElseThrow(() -> new FailedToReadPageException("Serwice was unable to read page!"));
 
         List<Thread> threadList = new ArrayList<>(10);
@@ -109,7 +110,6 @@ class ExtractThreadFromPageService {
                         .URL(threadLink)
                         .authorName(authorName)
                         .createDateTime(createDateTime)
-                        .hasBeenFetched(false)
                         .build();
                 thread.setThreadIdFromURL();
                 threadList.add(thread);

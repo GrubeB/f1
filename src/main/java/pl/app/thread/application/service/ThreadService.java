@@ -1,7 +1,6 @@
 package pl.app.thread.application.service;
 
 import lombok.RequiredArgsConstructor;
-import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -41,7 +40,7 @@ class ThreadService implements
     @Override
     public void fetchThreadListAndDelegateAllToKafka(ThreadListToFetchMessage message) {
         try {
-            List<Thread> threadList = extractService.extractThreadListFromThreadList(message.getUrl());
+            List<Thread> threadList = extractService.extractThreadList(message.getUrl());
             threadList.forEach(thread -> delegateToFetchService.delegateThreadWithListToFetchToKafka(
                     new ThreadWithListToFetchMessage(thread.getURL(), message.getIndustryName())));
         } catch (FailedToReadPageException exception) {
@@ -67,9 +66,9 @@ class ThreadService implements
         try {
             Thread fetchedThread = fetchThread(message.getUrl());
             fetchedThread.setIndustryName(message.getIndustryName());
-            ifThereAreMorePagesDelegateThreadWithList(message);
 
-            List<Thread> fetchedThreadList = extractService.extractThreadsFromThreadTree(message.getUrl());
+            List<Thread> fetchedThreadList = getThreadFromThreadList(message.getUrl());
+
             fetchedThreadList.add(fetchedThread);
 
             Thread mainThread = fetchedThreadList.stream()
@@ -93,16 +92,31 @@ class ThreadService implements
 
     }
 
+
+
     @Override
     public Thread fetchThread(String url) {
-        Document doc = readPage.readPage(url).orElseThrow(() -> new FailedToReadPageException("Serwice was unable to read page!"));
-        Thread fetchedThread = extractService.extractThreadFromBoxThread(doc.select("#boxThread"));
-
+        Thread fetchedThread = extractService.extractThread(url);
         fetchedThread.setURL(url);
         fetchedThread.setThreadIdFromURL();
-        fetchedThread.setHasBeenFetched(true);
         return fetchedThread;
     }
+    private List<Thread> getThreadFromThreadList(String url) {
+        List<Thread> fetchedThreadList = extractService.extractThreadListFromBottomTable(url);
+        List<String> pageUrlList = extractService.extractPageUrls(url);
+        if (pageUrlList.size() > 1 && !pageUrlList.contains(url)) {
+            pageUrlList.stream()
+                    .skip(1)
+                    .forEach((pageUrl) ->{
+                        List<Thread> threadListFormNextPageList = extractService.extractThreadListFromBottomTable(pageUrl);
+                        fetchedThreadList.addAll(threadListFormNextPageList);
+                    });
+            return fetchedThreadList;
+        } else {
+            return fetchedThreadList;
+        }
+    }
+
 
     private void ifThereAreMorePagesDelegateThreadWithList(ThreadWithListToFetchMessage message) {
         List<String> pageUrlList = extractService.extractPageUrls(message.getUrl());

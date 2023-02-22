@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import pl.app.thread.application.port.out.persistance.*;
 import pl.app.thread.domain.Thread;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,11 +21,12 @@ class ThreadPersistenceAdapter implements
         CreateIfNotExistsByThreadIdPort,
         DeletePort,
         FetchAllPort,
+        FindAllBetweenDates,
         FetchAllByMainThreadIdPort,
         FetchByIdPort,
         FetchByThreadIdPort,
         UpdatePort,
-        CountPort{
+        CountPort {
 
     private final ThreadEntityRepository repository;
     private final ThreadEntityMapper mapper = Mappers.getMapper(ThreadEntityMapper.class);
@@ -55,6 +57,14 @@ class ThreadPersistenceAdapter implements
     @Override
     public List<Thread> fetchAll() {
         return repository.findAll().stream()
+                .map(mapper::entityToDomain).toList();
+    }
+    @Override
+    public List<Thread> findAllBetweenDates(LocalDate from, LocalDate to) {
+        return repository.findAllByCreateDateTimeLessThanEqualAndCreateDateTimeGreaterThanEqual(
+                        from.atTime(23, 59, 59),
+                        to.atStartOfDay()
+                ).stream()
                 .map(mapper::entityToDomain).toList();
     }
 

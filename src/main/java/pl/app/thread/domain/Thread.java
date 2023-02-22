@@ -23,7 +23,6 @@ public class Thread {
     private String comment;
     private Integer numberOfDislikes;
     private Integer numberOfLikes;
-    private Boolean hasBeenFetched = false;
 
     public void setThreadIdFromURL() {
         this.threadId = extractThreadIdFromURL();
