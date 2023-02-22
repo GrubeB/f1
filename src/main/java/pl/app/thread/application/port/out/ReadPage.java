@@ -5,5 +5,5 @@ import org.jsoup.nodes.Document;
 import java.util.Optional;
 
 public interface ReadPage {
-    Optional<Document> readPage(String link);
+    Optional<Document> readPage(String url);
 }

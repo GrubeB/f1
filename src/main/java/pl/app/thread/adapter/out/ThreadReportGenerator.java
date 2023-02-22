@@ -82,20 +82,20 @@ class ThreadReportGenerator implements GenerateThreadReport {
 
     private List<String> getHeaders() {
         return Arrays.asList(
-                "nr",
-                "isMainThread",
-                "title",
-                "comment",
-                "createDateTime",
-                "authorName",
-                "threadId",
-                "mainThreadId",
-                "industryName",
+                "Number posta",
+                "Pierwszy post",
+                "Tytuł",
+                "Komentarz",
+                "Data stworzenia",
+                "Autor",
+                "PostId",
+                "MainPostId",
+                "Spółka",
                 "URL",
-                "exchangeRate",
-                "exchangeRateChange",
-                "numberOfDislikes",
-                "numberOfLikes"
+                "Kurs walutowy",
+                "Kurs walutowy zmiana",
+                "Dislikes",
+                "Likes"
         );
     }
 }

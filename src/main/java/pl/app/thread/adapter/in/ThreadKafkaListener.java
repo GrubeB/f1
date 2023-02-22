@@ -9,8 +9,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import pl.app.config.KafkaConfig;
-import pl.app.thread.application.exception.FailedToReadPageException;
-import pl.app.thread.application.port.in.*;
+import pl.app.thread.application.port.in.FetchAndSaveThreadAsync;
+import pl.app.thread.application.port.in.FetchThreadListAndDelegateAllToKafkaAsync;
+import pl.app.thread.application.port.in.FetchThreadWithListAndDelegateNotFetchedToKafkaAsync;
 import pl.app.thread.application.port.in.dto.ThreadListToFetchMessage;
 import pl.app.thread.application.port.in.dto.ThreadToFetchMessage;
 import pl.app.thread.application.port.in.dto.ThreadWithListToFetchMessage;
@@ -27,40 +28,25 @@ import pl.app.thread.application.port.in.dto.ThreadWithListToFetchMessage;
 )
 class ThreadKafkaListener {
     private final Logger logger = LoggerFactory.getLogger(ThreadKafkaListener.class);
-    private final FetchAndSaveThread fetchAndSaveThread;
-    private final FetchThreadListAndDelegateAllToKafka fetchThreadListAndDelegateAllToKafka;
-    private final FetchThreadWithListAndDelegateNotFetchedToKafka fetchThreadWithListAndDelegateNotFetchedToKafka;
-    private final DelegateThreadListToFetchToKafka delegateThreadListToFetchToKafka;
-    private final DelegateThreadToFetchToKafka delegateThreadToFetchToKafka;
-    private final DelegateThreadWithListToFetchToKafka delegateThreadWithListToFetchToKafka;
+    private final FetchAndSaveThreadAsync fetchAndSaveThread;
+    private final FetchThreadListAndDelegateAllToKafkaAsync fetchThreadListAndDelegateAllToKafka;
+    private final FetchThreadWithListAndDelegateNotFetchedToKafkaAsync fetchThreadWithListAndDelegateNotFetchedToKafka;
 
     @KafkaHandler
     public void listen(ConsumerRecord<String, ThreadListToFetchMessage> cr, @Payload ThreadListToFetchMessage payload) {
         logger.info("Logger [ThreadListToFetchMessage-json] received key {} | Payload: {} | Record: {}", cr.key(), payload, cr.toString());
-        try {
-            fetchThreadListAndDelegateAllToKafka.fetchThreadListAndDelegateAllToKafka(payload);
-        } catch (FailedToReadPageException exception) {
-            //delegateThreadListToFetchToKafka.delegateThreadListToFetchToKafka(payload.getUrl());
-        }
+        fetchThreadListAndDelegateAllToKafka.fetchThreadListAndDelegateAllToKafka(payload);
     }
 
     @KafkaHandler
     public void listen(ConsumerRecord<String, ThreadToFetchMessage> cr, @Payload ThreadToFetchMessage payload) {
         logger.info("Logger [ThreadToFetchMessage-json] received key {} | Payload: {} | Record: {}", cr.key(), payload, cr.toString());
-        try {
-            fetchAndSaveThread.fetchAndSaveThread(payload);
-        } catch (FailedToReadPageException exception) {
-            //delegateThreadToFetchToKafka.delegateThreadToFetchToKafka(payload.getUrl(), payload.getMainThreadId());
-        }
+        fetchAndSaveThread.fetchAndSaveThread(payload);
     }
 
     @KafkaHandler
     public void listen(ConsumerRecord<String, ThreadWithListToFetchMessage> cr, @Payload ThreadWithListToFetchMessage payload) {
         logger.info("Logger [ThreadWithListToFetchMessage-json] received key {} | Payload: {} | Record: {}", cr.key(), payload, cr.toString());
-        try {
-            fetchThreadWithListAndDelegateNotFetchedToKafka.fetchThreadWithListAndDelegateNotFetchedToKafka(payload);
-        } catch (FailedToReadPageException exception) {
-            //delegateThreadWithListToFetchToKafka.delegateThreadWithListToFetchToKafka(payload.getUrl());
-        }
+        fetchThreadWithListAndDelegateNotFetchedToKafka.fetchThreadWithListAndDelegateNotFetchedToKafka(payload);
     }
 }

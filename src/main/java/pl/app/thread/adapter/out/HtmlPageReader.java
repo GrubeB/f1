@@ -21,12 +21,12 @@ class HtmlPageReader implements ReadPage {
 
     @Override
     @Cacheable(value = CacheCustomizer.HTML_READ_PAGE_CACHE_NAME, unless = "#result == T(java.util.Optional).empty()")
-    public Optional<Document> readPage(String link) {
+    public Optional<Document> readPage(String url) {
         try {
-            logger.info("Reading page form url: " + link);
-            return Optional.of(Jsoup.connect(link + "?sort=pa").ignoreHttpErrors(true).get());
+            logger.debug("Reading page form url: " + url);
+            return Optional.of(Jsoup.connect(url).ignoreHttpErrors(true).get());
         } catch (IOException exception) {
-            logger.error("Failed to read page form url: " + link);
+            logger.error("Failed to read page form url: " + url);
             return Optional.empty();
         }
     }
@@ -34,7 +34,7 @@ class HtmlPageReader implements ReadPage {
     @Caching(evict = {
             @CacheEvict(value = CacheCustomizer.HTML_READ_PAGE_CACHE_NAME, allEntries = true)
     })
-    @Scheduled(fixedRateString = "900000") // 15*60*1000
+    @Scheduled(fixedRateString = "90000") // 5*60*1000
     public void emptyCache() {
         logger.info("emptying cache");
     }

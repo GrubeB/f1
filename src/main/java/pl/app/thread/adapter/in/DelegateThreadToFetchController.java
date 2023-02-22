@@ -10,10 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.app.thread.application.port.in.DelegateThreadListToFetchToKafka;
 import pl.app.thread.application.port.in.DelegateThreadToFetchToKafka;
 import pl.app.thread.application.port.in.DelegateThreadWithListToFetchToKafka;
-import pl.app.thread.application.port.in.dto.ExtendThreadListToFetchDto;
-import pl.app.thread.application.port.in.dto.ThreadListToFetchMessage;
-import pl.app.thread.application.port.in.dto.ThreadToFetchMessage;
-import pl.app.thread.application.port.in.dto.ThreadWithListToFetchMessage;
+import pl.app.thread.application.port.in.dto.*;
 
 @RestController
 @RequestMapping("/api/delegate-fetch-threads")
@@ -29,11 +26,20 @@ class DelegateThreadToFetchController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PostMapping("/extend-thread-list")
-    private ResponseEntity<?> delegateThreadListToFetchToKafka(@RequestBody ExtendThreadListToFetchDto dto) {
-        dto.getUrlList().forEach(url ->
-                delegateThreadListToFetchToKafka.delegateThreadListToFetchToKafka(new ThreadListToFetchMessage(url, dto.getIndustryName()))
-        );
+    @PostMapping("/thread-list/url-list")
+    private ResponseEntity<?> delegateThreadListToFetchToKafka(@RequestBody ThreadListToFetchUrlListDto dto) {
+        dto.getUrlList().forEach(url -> delegateThreadListToFetchToKafka.delegateThreadListToFetchToKafka(new ThreadListToFetchMessage(url, dto.getIndustryName())));
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+    @PostMapping("/thread-list/number-of-urls")
+    private ResponseEntity<?> delegateThreadListToFetchToKafka(@RequestBody ThreadListToFetchNumberOfUrlsDto dto) {
+        String url = dto.getUrl();
+        String[] split = url.split(".html", 2);
+        String nextUrl;
+        for (int i = dto.getStartUrl()+1; i <dto.getNumberOfUrls()+dto.getStartUrl()+1; i++) {
+            nextUrl = split[0].concat(","+i).concat(".html");
+            delegateThreadListToFetchToKafka.delegateThreadListToFetchToKafka(new ThreadListToFetchMessage(nextUrl, dto.getIndustryName()));
+        }
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

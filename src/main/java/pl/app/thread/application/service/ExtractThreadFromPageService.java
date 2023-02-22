@@ -66,8 +66,8 @@ class ExtractThreadFromPageService {
         }
     }
 
-    public List<Thread> extractThreadListFromThreadList(String link) {
-        Document doc = readPage.readPage(link).orElseThrow(() -> new FailedToReadPageException("Serwice was unable to read page!"));
+    public List<Thread> extractThreadListFromThreadList(String url) {
+        Document doc = readPage.readPage(url).orElseThrow(() -> new FailedToReadPageException("Serwice was unable to read page!"));
 
         List<Thread> threadList = new ArrayList<>(10);
         for (Element row : doc.select(".threadsList tbody tr")) {
@@ -94,8 +94,8 @@ class ExtractThreadFromPageService {
         return threadList;
     }
 
-    public List<Thread> extractThreadsFromThreadTree(String link) {
-        Document doc = readPage.readPage(link).orElseThrow(() -> new FailedToReadPageException("Serwice was unable to read page!"));
+    public List<Thread> extractThreadsFromThreadTree(String url) {
+        Document doc = readPage.readPage(url).orElseThrow(() -> new FailedToReadPageException("Serwice was unable to read page!"));
 
         List<Thread> threadList = new ArrayList<>(10);
         for (Element row : doc.select("#boxThreadTree .boxContent .threadTree li")) {
@@ -121,14 +121,28 @@ class ExtractThreadFromPageService {
         return threadList;
     }
 
-    public Long extractThreadIdFromLink(String link) {
+    public Long extractThreadIdFromLink(String url) {
         try {
-            String substring = link.substring(0, link.lastIndexOf(".html"));
-            String idString = substring.substring(link.lastIndexOf(",") + 1);
+            String substring = url.substring(0, url.lastIndexOf(".html"));
+            String idString = substring.substring(url.lastIndexOf(",") + 1);
             return Long.parseLong(idString);
 
         } catch (Exception exception) {
             return -1L;
         }
+    }
+
+    public List<String> extractPageUrls(String url) {
+        Document doc = readPage.readPage(url).orElseThrow(() -> new FailedToReadPageException("Serwice was unable to read page!"));
+        List<String> pageLinkList = new ArrayList<>(1);
+        Elements paginationForum = doc.select(".paginationForum ");
+        for (Element element : paginationForum.select(".numerals .outerCenter .innerCenter .numeral")) {
+            try {
+                String threadLink = element.select("a").get(0).absUrl("href");
+                pageLinkList.add(threadLink);
+            } catch (Exception exception) {
+            }
+        }
+        return pageLinkList;
     }
 }

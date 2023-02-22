@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  kafka-topics:
+    container_name: kafka-topics
+    image: landoop/kafka-topics-ui
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+    environment:
+      - KAFKA_REST_PROXY_URL=http://192.168.42.188:9092
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    ports:
+      - '8086:8080'
+    depends_on:
+      - kafka
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=test-kafka-cluster
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=192.168.42.188:9092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=192.168.42.188:2181
+      - KAFKA_CLUSTERS_0_READONLY=true
+
+#docker run --rm -it -p 8000:8000 -e "KAFKA_REST_PROXY_URL=http://192.168.42.188:9092" -e "PROXY=true" landoop/kafka-topics-ui
+

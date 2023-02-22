@@ -9,6 +9,7 @@ import pl.app.thread.application.port.out.persistance.*;
 import pl.app.thread.domain.Thread;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Setter
@@ -16,12 +17,14 @@ import java.util.List;
 @RequiredArgsConstructor
 class ThreadPersistenceAdapter implements
         CreatePort,
+        CreateIfNotExistsByThreadIdPort,
         DeletePort,
         FetchAllPort,
         FetchAllByMainThreadIdPort,
         FetchByIdPort,
         FetchByThreadIdPort,
-        UpdatePort {
+        UpdatePort,
+        CountPort{
 
     private final ThreadEntityRepository repository;
     private final ThreadEntityMapper mapper = Mappers.getMapper(ThreadEntityMapper.class);
@@ -31,6 +34,17 @@ class ThreadPersistenceAdapter implements
         ThreadEntity threadEntity = mapper.domainToEntity(domain);
         ThreadEntity saved = repository.save(threadEntity);
         return mapper.entityToDomain(saved);
+    }
+
+    @Override
+    public Thread createIfNotExistsByThreadIdPort(Thread domain) {
+        ThreadEntity threadEntity = mapper.domainToEntity(domain);
+        Optional<ThreadEntity> byThreadId = repository.findByThreadId(threadEntity.getThreadId());
+        if (byThreadId.isPresent()) {
+            return mapper.entityToDomain(byThreadId.get());
+        } else {
+            return mapper.entityToDomain(repository.save(threadEntity));
+        }
     }
 
     @Override
@@ -71,4 +85,8 @@ class ThreadPersistenceAdapter implements
         return mapper.entityToDomain(saved);
     }
 
+    @Override
+    public Long count() {
+        return repository.count();
+    }
 }

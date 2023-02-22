@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExtendThreadListToFetchDto {
+public class ThreadListToFetchUrlListDto {
     @JsonProperty("url")
     private List<String> urlList;
     @JsonProperty("industry_name")

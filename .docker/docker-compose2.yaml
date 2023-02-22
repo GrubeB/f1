@@ -33,6 +33,9 @@ services:
       - zookeeper:/bitnami/zookeeper
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      network:
+        ipv4_address: 10.5.0.6
   kafka:
     container_name: kafka
     image: bitnami/kafka:latest
@@ -40,6 +43,7 @@ services:
     hostname: kafka
     ports:
       - '9092:9092'
+      - '9093:9093'
     volumes:
       - kafka:/bitnami/kafka
     environment:
@@ -52,6 +56,21 @@ services:
       - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://localhost:9092,INTER_BROKER://localhost:9093
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=INTER_BROKER
       - KAFKA_CFG_MAX_REQUEST_SIZE=1048576000
+    networks:
+      network:
+        ipv4_address: 10.5.0.5
+    depends_on:
+      - zookeeper
+
+networks:
+  network2:
+    driver: bridge
+  network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+          gateway: 10.5.0.1
 
 volumes:
   postgres-db:
