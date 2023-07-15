@@ -12,14 +12,16 @@ import pl.app.thread.application.port.in.GenerateThreadReport;
 import pl.app.thread.application.port.out.persistance.FindAllBetweenDates;
 import pl.app.thread.domain.Thread;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.IntStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +38,61 @@ class ThreadReportService implements GenerateThreadReport {
         return generate(allBetweenDates, type);
     }
 
+    @Override
+    public byte[] generateZip(ReportType type) throws IOException {
+        List<AbstractMap.SimpleEntry<LocalDate, LocalDate>> dates = getDates();
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        try (ZipOutputStream zipOut = new ZipOutputStream(byteArrayOutputStream)) {
+            dates.forEach((entry) -> {
+                String dateFromString = DateTimeFormatter.ISO_LOCAL_DATE.format(entry.getKey());
+                String dateToString = DateTimeFormatter.ISO_LOCAL_DATE.format(entry.getValue());
+                try {
+                    byte[] report = generate(ReportType.XLSX, entry.getKey(), entry.getValue());
+                    putFileToZipOutputStream(zipOut, report, "report_" + dateFromString + "_" + dateToString + "." + type.getExtension());
+                } catch (IOException e) {
+                }
+            });
+            zipOut.closeEntry();
+        }
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    private List<AbstractMap.SimpleEntry<LocalDate, LocalDate>> getDates() {
+        return Arrays.asList(
+                new AbstractMap.SimpleEntry<>(LocalDate.of(2000, 1, 1), LocalDate.of(2015, 12, 31)),
+                new AbstractMap.SimpleEntry<>(LocalDate.of(2016, 1, 1), LocalDate.of(2016, 6, 30)),
+                new AbstractMap.SimpleEntry<>(LocalDate.of(2016, 7, 1), LocalDate.of(2016, 12, 31)),
+                new AbstractMap.SimpleEntry<>(LocalDate.of(2017, 1, 1), LocalDate.of(2017, 6, 30)),
+                new AbstractMap.SimpleEntry<>(LocalDate.of(2017, 7, 1), LocalDate.of(2017, 12, 31)),
+                new AbstractMap.SimpleEntry<>(LocalDate.of(2018, 1, 1), LocalDate.of(2018, 6, 30)),
+                new AbstractMap.SimpleEntry<>(LocalDate.of(2018, 7, 1), LocalDate.of(2018, 12, 31)),
+                new AbstractMap.SimpleEntry<>(LocalDate.of(2019, 1, 1), LocalDate.of(2019, 6, 30)),
+                new AbstractMap.SimpleEntry<>(LocalDate.of(2019, 7, 1), LocalDate.of(2019, 12, 31)),
+                new AbstractMap.SimpleEntry<>(LocalDate.of(2020, 1, 1), LocalDate.of(2020, 6, 30)),
+                new AbstractMap.SimpleEntry<>(LocalDate.of(2020, 7, 1), LocalDate.of(2020, 12, 31)),
+                new AbstractMap.SimpleEntry<>(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 6, 30)),
+                new AbstractMap.SimpleEntry<>(LocalDate.of(2021, 7, 1), LocalDate.of(2021, 12, 31)),
+                new AbstractMap.SimpleEntry<>(LocalDate.of(2022, 1, 1), LocalDate.of(2022, 6, 30)),
+                new AbstractMap.SimpleEntry<>(LocalDate.of(2022, 7, 1), LocalDate.of(2022, 12, 31)),
+                new AbstractMap.SimpleEntry<>(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 6, 30)),
+                new AbstractMap.SimpleEntry<>(LocalDate.of(2023, 7, 1), LocalDate.of(2023, 12, 31))
+        );
+    }
+
+    private void putFileToZipOutputStream(ZipOutputStream zipOut, byte[] file, String fileName) throws IOException {
+        ZipEntry zipEntry = new ZipEntry(fileName);
+        zipOut.putNextEntry(zipEntry);
+
+        ByteArrayInputStream byteArrayIn = new ByteArrayInputStream(file);
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = byteArrayIn.read(buffer)) > 0) {
+            zipOut.write(buffer, 0, len);
+        }
+    }
+
     public byte[] generate(List<Thread> threadList, ReportType type) throws IOException {
         Report report = createNewReport.createNewReport(type);
         writeHeader(report);
@@ -48,14 +105,14 @@ class ThreadReportService implements GenerateThreadReport {
         CellStyle cellStyleSecondary = report.generateCellStyle(CellStyleType.ARIAL, CellStyleType.FONT10, CellStyleType.BACKGROUND_PRIMARY_LIGHT);
 
         Comparator<LocalDateTime> nullLastLocalDateTimeSafe = (o1, o2) -> {
+            if (Objects.isNull(o1) && Objects.isNull(o2)) return 0;
             if (Objects.isNull(o2)) return 1;
             else if (Objects.isNull(o1)) return -1;
             else return o1.compareTo(o2);
         };
 
-        Comparator<Thread> comparator = Comparator
-                .nullsLast(Comparator
-                        .nullsLast(Comparator.comparing(Thread::getMainThreadId))
+        Comparator<Thread> comparator = Comparator.nullsLast(
+                Comparator.nullsLast(Comparator.comparing(Thread::getMainThreadId))
                         .thenComparing(Thread::getCreateDateTime, nullLastLocalDateTimeSafe));
         List<Thread> sortedThreadList = threadList.stream().sorted(comparator).toList();
 

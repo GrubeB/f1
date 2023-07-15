@@ -34,7 +34,7 @@ class HtmlPageReader implements ReadPage {
     @Caching(evict = {
             @CacheEvict(value = CacheCustomizer.HTML_READ_PAGE_CACHE_NAME, allEntries = true)
     })
-    @Scheduled(fixedRateString = "90000") // 5*60*1000
+    @Scheduled(fixedRateString = "60000") // 60*1000
     public void emptyCache() {
         logger.info("emptying cache");
     }

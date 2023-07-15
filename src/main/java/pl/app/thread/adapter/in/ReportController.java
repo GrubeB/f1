@@ -12,13 +12,25 @@ import pl.app.report.domain.ReportType;
 import pl.app.thread.application.port.in.GenerateThreadReport;
 import pl.app.thread.application.port.in.dto.ThreadReportDto;
 
-import java.io.IOException;
+import java.io.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @RestController
 @RequestMapping("/api/threads/reports")
 @RequiredArgsConstructor
 class ReportController {
     private final GenerateThreadReport generateThreadReport;
+    @GetMapping("/xlsx/all")
+    private ResponseEntity<byte[]> generateXlsxReportAll() throws IOException {
+        byte[] report = generateThreadReport.generateZip(ReportType.XLS);
+        return createResponseEntity(report, "reports.zip");
+    }
+
 
     @GetMapping("/xlsx")
     private ResponseEntity<byte[]> generateXlsxReport(@RequestBody ThreadReportDto dto) throws IOException {

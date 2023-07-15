@@ -9,8 +9,9 @@ import pl.app.thread.application.port.out.persistance.*;
 import pl.app.thread.domain.Thread;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 @Setter
@@ -67,8 +68,23 @@ class ThreadPersistenceAdapter implements
                 to.atTime(23, 59, 59)
         );
         List<Long> mainThreadIdList = mainThreadList.stream().map(ThreadEntity::getThreadId).toList();
-        List<ThreadEntity> result = repository.findAllByMainThreadIdIn(mainThreadIdList);
+        List<ThreadEntity> result = mainThreadIdList.stream().collect(blockCollector(65_535))
+                .stream().map(repository::findAllByMainThreadIdIn)
+                .flatMap(List::stream)
+                .toList();// IN operator can have at most 65 535 parameters used in ThreadEntityRepository#findAllByMainThreadIdIn
         return result.stream().map(mapper::entityToDomain).toList();
+    }
+    public static <T> Collector<T, List<List<T>>, List<List<T>>> blockCollector(int blockSize) {
+        return Collector.of(
+                ArrayList::new,
+                (list, value) -> {
+                    List<T> block = (list.isEmpty() ? null : list.get(list.size() - 1));
+                    if (block == null || block.size() == blockSize)
+                        list.add(block = new ArrayList<>(blockSize));
+                    block.add(value);
+                },
+                (r1, r2) -> { throw new UnsupportedOperationException("Parallel processing not supported"); }
+        );
     }
 
     @Override

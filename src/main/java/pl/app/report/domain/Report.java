@@ -33,7 +33,11 @@ public class Report {
         Row row = sheet.createRow(rowIndex);
         for (int columnNumber = cellIndex; columnNumber < (cellIndex + data.size()); columnNumber++) {
             Cell cell = row.createCell(columnNumber);
-            cell.setCellValue(data.get(columnNumber - cellIndex));
+            if(data.get(columnNumber - cellIndex).length()<32767){
+                cell.setCellValue(data.get(columnNumber - cellIndex));
+            }else {
+                cell.setCellValue(data.get(columnNumber - cellIndex).substring(0,32766));
+            }
             cell.setCellStyle(cellStyle);
         }
     }

@@ -1,0 +1,259 @@
+{
+	"info": {
+		"_postman_id": "268327c0-57a3-4c68-8266-ad0a0d2281fd",
+		"name": "f1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8964498"
+	},
+	"item": [
+		{
+			"name": "report",
+			"item": [
+				{
+					"name": "xls",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/threads/reports/xls",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"threads",
+								"reports",
+								"xls"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "xlsx",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"from\":\"2020-01-01\",\r\n    \"to\":\"2020-06-30\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/threads/reports/xlsx",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"threads",
+								"reports",
+								"xlsx"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "xlsx all",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"from\":\"2020-01-01\",\r\n    \"to\":\"2020-06-30\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/threads/reports/xlsx",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"threads",
+								"reports",
+								"xlsx"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "fetch all",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/threads",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"threads"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "count",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/threads/count",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"threads",
+						"count"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delegateThreadList",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"url\" :\"https://www.bankier.pl/forum/forum_o_cd-projekt,6,21,353.html\",\r\n    \"industry_name\" :\"cd-projekt\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/delegate-fetch-threads/thread-list",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"delegate-fetch-threads",
+						"thread-list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delegateThreadList number-of-urls",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"url\" :\"https://www.bankier.pl/forum/forum_o_cd-projekt,6,21,353.html\",\r\n    \"start_url\":2000,\r\n    \"umber_of_urls\":1000,\r\n    \"industry_name\" :\"cd-projekt\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/delegate-fetch-threads/thread-list/number-of-urls",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"delegate-fetch-threads",
+						"thread-list",
+						"number-of-urls"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delegateThreadList url-list",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"url\" :[\r\n        \"https://www.bankier.pl/forum/forum_o_cd-projekt,6,21,353.html\",\r\n        \"https://www.bankier.pl/forum/forum_o_cd-projekt,6,21,353,2.html\",\r\n        \"https://www.bankier.pl/forum/forum_o_cd-projekt,6,21,353,3.html\",\r\n        \"https://www.bankier.pl/forum/forum_o_cd-projekt,6,21,353,4.html\",\r\n        \"https://www.bankier.pl/forum/forum_o_cd-projekt,6,21,353,5.html\",\r\n        \"https://www.bankier.pl/forum/forum_o_cd-projekt,6,21,353,6.html\",\r\n        \"https://www.bankier.pl/forum/forum_o_cd-projekt,6,21,353,7.html\",\r\n        \"https://www.bankier.pl/forum/forum_o_cd-projekt,6,21,353,8.html\",\r\n        \"https://www.bankier.pl/forum/forum_o_cd-projekt,6,21,353,9.html\",\r\n        \"https://www.bankier.pl/forum/forum_o_cd-projekt,6,21,353,10.html\"\r\n    ],\r\n    \"industry_name\" :\"cd-projekt\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/delegate-fetch-threads/thread-list/url-list",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"delegate-fetch-threads",
+						"thread-list",
+						"url-list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delegateThreadWithListToFetchToKafka",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"url\" :\"https://www.bankier.pl/forum/temat_wiadomosc-usunieta-przez-moderatora,57467413.html\",\r\n    \"industry_name\" :\"cd-projekt\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/delegate-fetch-threads/thread-with-list",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"delegate-fetch-threads",
+						"thread-with-list"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
